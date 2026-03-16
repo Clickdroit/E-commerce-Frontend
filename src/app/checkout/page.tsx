@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useCartStore } from "@/store/cart";
@@ -14,9 +15,8 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import type { ShippingAddress } from "@/lib/types";
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "pk_test_placeholder"
-);
+const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
 
 function CheckoutForm() {
   const router = useRouter();
@@ -252,9 +252,20 @@ export default function CheckoutPage() {
     return (
       <div className="max-w-lg mx-auto px-4 py-16 text-center">
         <h1 className="text-2xl font-bold text-gray-900 mb-4">Please sign in to checkout</h1>
-        <a href="/login" className="text-indigo-600 hover:text-indigo-500 font-medium">
+        <Link href="/login" className="text-indigo-600 hover:text-indigo-500 font-medium">
           Go to Login
-        </a>
+        </Link>
+      </div>
+    );
+  }
+
+  if (!stripePromise) {
+    return (
+      <div className="max-w-lg mx-auto px-4 py-16 text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">Payment Not Configured</h1>
+        <p className="text-gray-500">
+          Stripe publishable key is not set. Please configure NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.
+        </p>
       </div>
     );
   }

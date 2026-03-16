@@ -49,7 +49,7 @@ export default async function TrackingPage({
       {trackingNumber && !trackingData && (
         <div className="rounded-lg bg-yellow-50 border border-yellow-200 p-4">
           <p className="text-sm text-yellow-700">
-            No order found with tracking number &quot;{trackingNumber}&quot;.
+            No order found with tracking number &ldquo;{trackingNumber}&rdquo;.
           </p>
         </div>
       )}
