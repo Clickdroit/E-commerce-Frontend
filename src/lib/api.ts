@@ -124,7 +124,24 @@ export const productsApi = {
     if (params?.search) query.set("search", params.search);
     if (params?.category) query.set("category", params.category);
     const qs = query.toString();
-    return apiRequest<PaginatedData<Product>>(`/products${qs ? `?${qs}` : ""}`);
+    return apiRequest<any>(`/products${qs ? `?${qs}` : ""}`).then((res) => {
+      if (res.success) {
+        const { products, limit, offset, total } = res.data;
+        const page = params?.page || 1;
+        return {
+          success: true,
+          data: {
+            items: products,
+            page,
+            limit,
+            offset,
+            total: total ?? products.length,
+            totalPages: total ? Math.ceil(total / limit) : 1,
+          },
+        } as any;
+      }
+      return res;
+    });
   },
 
   get(id: string) {
@@ -158,7 +175,6 @@ export const productsApi = {
     });
   },
 };
-
 // ─── Orders API ────────────────────────────────────────────────────────────
 
 export const ordersApi = {
